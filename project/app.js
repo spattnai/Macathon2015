@@ -5,6 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//get EBAY API to work
+var ebay = require('ebay-api');
+
+
+//routes
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -56,5 +62,33 @@ app.use(function(err, req, res, next) {
     });
 });
 
+//EBAY params and authentication
+var params = {};
+params.keywords = [ "Apple Macbook Pro" ];
+params['paginationInput.entriesPerPage'] = 10;
+ebay.ebayApiGetRequest({
+    serviceName: 'FindingService',
+    opType: 'findItemsByKeywords',
+    appId: 'Shivangi-70f0-4acf-bf10-b50b7524aa6a',      // FILL IN YOUR OWN APP KEY, GET ONE HERE: https://publisher.ebaypartnernetwork.com/PublisherToolsAPI
+    params: params,
+    //filters: filters,
+    parser: ebay.parseItemsFromResponse    // (default)
+  },
+  // gets all the items together in a merged array
+  function itemsCallback(error, items) {
+    if (error) throw error;
+    //console.log(items);
+
+    console.log('Found', items.length, 'items');
+    
+    for (var i = 0; i < items.length; i++) {
+      console.log(items[i].topRatedListing);
+      console.log('- ' + items[i].title+'-'+items[i].galleryURL+'-'+items[i].viewItemURL+'-'+items[i].shippingInfo.shippingType+'-'+items[i].sellingStatus.currentPrice.USD+items[i].listingInfo.listingType);
+
+    }  
+  }
+);
 
 module.exports = app;
+
+
