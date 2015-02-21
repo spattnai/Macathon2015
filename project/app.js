@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 //get EBAY API to work
 var ebay = require('ebay-api');
 
+//get Best Buy API to work
+var bby = require('./node_modules/bestbuy/index').init('heqqmenhew4q38ea8xwmkgdp');
 
 //routes
 
@@ -88,6 +90,19 @@ ebay.ebayApiGetRequest({
     }  
   }
 );
+
+//Best Buy queries and JSON response
+//Product search for all top rated items, show name + sale price + customer review avg + imageURL
+bby.products('search=macbook&search=pro&customerTopRated=true', {
+    show: 'name,salePrice,customerReviewAverage,image'
+}, function(err, data) {
+    console.log('Product Search result number one:');
+    for (var i = data.products.length - 1; i >= 0; i--) {
+        console.log(data.products[i]);
+    };
+    // console.log(data.products[0]);
+    console.log('Not Found');
+});
 
 module.exports = app;
 
