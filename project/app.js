@@ -15,6 +15,7 @@ var bby = require('./node_modules/bestbuy/index').init('heqqmenhew4q38ea8xwmkgdp
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var request = require('request');
 
 var app = express();
 
@@ -33,6 +34,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
+app.use(function(req, res, next) {
+    if (!collections.app) {
+        return next(new Error('No Collections.'));
+    }
+    req.collections = collections;
+    next();
+})
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -40,6 +49,11 @@ app.use(function(req, res, next) {
     next(err);
 });
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+})
 // error handlers
 
 // development error handler
@@ -138,3 +152,20 @@ http.get("http://api.walmartlabs.com/v1/search?apiKey=53aggp3twp6f2e7eb98xghwq&q
 module.exports = app;
 
 
+OperationHelper = require('apac').OperationHelper;
+
+var opHelper = new OperationHelper({
+    awsId: "AKIAIMWTC3ZE35RMD4ZA",
+    awsSecret: "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",
+    assocId: "macathon2015-20"
+});
+
+opHelper.execute('ItemSearch', {
+    'SearchIndex': 'Books',
+    'Keywords': 'harry potter',
+    'ResponseGroup': 'ItemAttributes, Offers'
+}, function(err, results) {
+    // console.log(results.ItemSearchResponse.Items[0].Request[0].ItemSearchRequest[0]);
+    // res.send(results)
+    console.log(results.ItemSearchResponse.Items[0]);
+});
