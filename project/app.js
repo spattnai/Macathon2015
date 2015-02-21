@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var http = require('http');
 //get EBAY API to work
 var ebay = require('ebay-api');
 
@@ -103,6 +103,21 @@ bby.products('search=macbook&search=pro&customerTopRated=true', {
     // console.log(data.products[0]);
     console.log('Not Found');
 });
+
+http.get('http://api.walmartlabs.com/v1/search?apiKey=53aggp3twp6f2e7eb98xghwq&query=Apple%20Macbook%20Pro&count=5&sort=relevance', function (error, response, items) {
+  if (!error && response.statusCode == 200) {
+    var arrg = JSON.parse(items);
+    var item=arrg.items;
+    for(var i in item){
+        console.log(item[i].name+'-'+item[i].salePrice+'-'+item[i].sellerInfo+'-'+item[i].productTrackingUrl);
+    }
+    
+   
+  }
+}).on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
+
 
 module.exports = app;
 
